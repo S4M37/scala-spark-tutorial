@@ -1,0 +1,8 @@
+u1 i1 view
+u1 i2 view
+u1 i3 view
+u1 i1 click
+u1 i1 view
+u2 i1 view
+u2 i1 view
+u2 i2 view

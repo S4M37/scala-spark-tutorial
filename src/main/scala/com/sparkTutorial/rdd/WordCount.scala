@@ -1,9 +1,7 @@
 package com.sparkTutorial.rdd
 
-import org.apache.log4j.Level
-import org.apache.log4j.Logger
-import org.apache.spark.SparkConf
-import org.apache.spark._
+import org.apache.log4j.{Level, Logger}
+import org.apache.spark.{SparkConf, _}
 
 object WordCount {
 
@@ -17,6 +15,33 @@ object WordCount {
     val words = lines.flatMap(line => line.split(" "))
 
     val wordCounts = words.countByValue()
-    for ((word, count) <- wordCounts) println(word + " : " + count)
+    // for ((word, count) <- wordCounts) println(word + " : " + count)
+
+
+    val eventsRddLines = sc.textFile("in/events.rdd.txt")
+
+    eventsRddLines.map(line => {
+      val parts = line.split(" ")
+      Event(
+        user = parts(0),
+        item = parts(1),
+        action = parts(2)
+      )
+    }).groupBy(record => (record.user, record.item))
+      .map(groupItem => {
+        var score = 0
+        groupItem._2.foreach(f => {
+          if (f.action == "click") {
+            score += 2
+          } else if (f.action == "view") {
+            score += 1
+          }
+        })
+        (groupItem._1._1, groupItem._1._2, score)
+      })
+      .collect().foreach(println)
   }
+
 }
+
+case class Event(user: String, item: String, action: String)
