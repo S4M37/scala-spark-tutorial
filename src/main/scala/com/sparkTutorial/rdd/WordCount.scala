@@ -25,7 +25,8 @@ object WordCount {
       Event(
         user = parts(0),
         item = parts(1),
-        action = parts(2)
+        action = parts(2),
+        t = parts(3)
       )
     }).groupBy(record => (record.user, record.item))
       .map(groupItem => {
@@ -37,11 +38,11 @@ object WordCount {
             score += 1
           }
         })
-        (groupItem._1._1, groupItem._1._2, score)
+        (groupItem._1._1, groupItem._1._2, groupItem._2.map { e => e.t }.collectFirst { case e => e }.get, score)
       })
       .collect().foreach(println)
   }
 
 }
 
-case class Event(user: String, item: String, action: String)
+case class Event(user: String, item: String, action: String, t: String)
